@@ -182,10 +182,11 @@ class ClassificationTrainer(LightningModule):
         self.log(
             "test_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
         )
+
+    def test_epoch_end(self, outputs) -> None:
         self.log(
             "test_acc",
-            self.test_accuracy,
-            on_step=True,
+            self.test_accuracy.compute(),
             on_epoch=True,
             prog_bar=True,
             logger=True,
