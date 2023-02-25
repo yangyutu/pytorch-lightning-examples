@@ -1,0 +1,3 @@
+# @package _group_
+_target_: dataset.MNISTDataModule
+data_dir: /mnt/d/MLData/Repos/play_ground/pytorch-lightning-examples/learning_rate_schedule/MNIST

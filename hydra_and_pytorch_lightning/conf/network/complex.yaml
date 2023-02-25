@@ -1,0 +1,13 @@
+# @package _group_
+_target_: network.ClassificationTrainer
+model:
+  _target_: network.MLP
+  channels: 1
+  width: 28
+  height: 28
+  hidden_size: 64
+  num_classes: 10
+num_classes: 10  
+config:
+  learning_rate: 1e-4
+

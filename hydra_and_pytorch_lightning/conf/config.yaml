@@ -1,0 +1,9 @@
+train:
+  learning_rate: 0.05
+  run_test: false
+
+
+defaults:
+  - data: mnist
+  - network: simple
+  - trainer: pl_trainer
