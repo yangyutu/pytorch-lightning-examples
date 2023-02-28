@@ -67,7 +67,7 @@ class LitMNIST(LightningModule):
 
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log(
-            "val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+            "val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, sync_dist=True
         )
         self.log(
             "val_acc",
@@ -76,6 +76,7 @@ class LitMNIST(LightningModule):
             on_epoch=True,
             prog_bar=True,
             logger=True,
+            sync_dist=True
         )
 
     def test_step(self, batch, batch_idx):
@@ -87,7 +88,7 @@ class LitMNIST(LightningModule):
 
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log(
-            "test_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+            "test_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, sync_dist=True
         )
         self.log(
             "test_acc",
@@ -96,22 +97,12 @@ class LitMNIST(LightningModule):
             on_epoch=True,
             prog_bar=True,
             logger=True,
+            sync_dist=True
         )
 
     def configure_optimizers(self):
-        # configure optimizer and its lr scheduler
-        # https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html#configure-optimizers
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": torch.optim.lr_scheduler.ExponentialLR(
-                    optimizer, gamma=0.999
-                ),
-                "interval": "step",
-                "frequency": 1,
-            },
-        }
+        return optimizer
 
     ####################
     # DATA RELATED
@@ -194,12 +185,12 @@ def main():
         project="lightning_MNIST_test",  # group runs in "MNIST" project
         # log_model="all",
         save_dir="./experiments/logs",
-        tags=["MNIST", "lr_scheduler_expontial"],
+        tags=["MNIST", "baseline"],
     )
 
     trainer = Trainer(
         accelerator="auto",
-        devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
+        devices=torch.cuda.device_count() if torch.cuda.is_available() else None,  # limiting got iPython runs
         max_epochs=10,
         logger=wandb_logger,
         callbacks=[
@@ -208,6 +199,7 @@ def main():
             lr_monitor,
         ],
         deterministic=True,
+        strategy="ddp"
     )
     trainer.fit(
         model,
