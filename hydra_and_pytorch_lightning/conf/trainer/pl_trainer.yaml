@@ -1,4 +1,7 @@
 # @package _group_
+defaults:
+  - logger: wandb
+
 
 _target_: pytorch_lightning.Trainer
 deterministic: True
@@ -6,10 +9,6 @@ precision: 16
 accelerator: auto
 devices: 1
 max_epochs: 2
-logger: 
-  - _target_: pytorch_lightning.loggers.WandbLogger
-    project: lightning_MNIST_test
-    tags: ["hydra"]
 callbacks:
   - _target_: pytorch_lightning.callbacks.LearningRateMonitor
     logging_interval: step

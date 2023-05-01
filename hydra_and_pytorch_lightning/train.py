@@ -20,7 +20,7 @@ def main(cfg: DictConfig) -> Trainer:
 
     network = instantiate(cfg.network)
     data_module = instantiate(cfg.data)
-    trainer = instantiate(cfg.trainer)
+    trainer = instantiate(cfg.trainer, _convert_="all")
     trainer.fit(model=network, datamodule=data_module)
     if cfg.train.run_test:
         trainer.test(datamodule=data_module)
@@ -43,7 +43,10 @@ def main(cfg: DictConfig) -> Trainer:
 # python train.py trainer.max_epochs=4 +data.batch_size=128 network=complex trainer.logger.0.project=new_tag
 
 # override tags in the logger, need to use single quote since we have list here
-# python train.py trainer.max_epochs=4 +data.batch_size=128 network=complex 'trainer.logger.0.tags=[hydra, new_tag]'
+# python train.py trainer.max_epochs=4 +data.batch_size=128 network=complex 'trainer.logger.tags=[hydra, new_tag]'
+
+# override logger
+# python train.py trainer/logger=mlflow
 
 if __name__ == "__main__":
     main()
